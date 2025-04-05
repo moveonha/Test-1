@@ -1,1 +1,77 @@
-dfwefwfdfwfdfwefwfweffwefweefw1번 수정
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 가입</title>
+</head>
+<body>
+    <h1>회원 가입</h1>
+    <form id="signupForm" onsubmit="saveData(event)">
+        <table>
+            <tr>
+                <td>이름</td>
+                <td><input type="text" name="name" required></td>
+            </tr>
+            <tr>
+                <td>전화번호</td>
+                <td><input type="text" name="phone" required></td>
+            </tr>
+            <tr>
+                <td>이메일</td>
+                <td><input type="email" name="email" required></td>
+            </tr>
+            <tr>
+                <td>ID</td>
+                <td><input type="text" name="id" required></td>
+            </tr>
+            <tr>
+                <td>pw</td>
+                <td><input type="password" name="pw" required></td>
+            </tr>
+        </table>
+        <button type="submit">회원 가입</button>
+    </form>
+    <button onclick="requestUserId()">유저 아이디를 request하는 함수</button>
+    <div id="result"></div> <!-- 서버 응답을 표시할 부분 -->
+    
+    
+    <script>
+        function requestUserId(){
+            const userId = document.getElementsByName("id")[0].value; 
+            console.log("userId ::",userId)
+            const url = `http://localhost:3000/user/${userId}`;  // 서버의 회원 가입 처리 URL
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then(response =>{
+                console.log(response)
+                document.getElementById("result") = response.json()
+            })
+        }
+        // 회원 가입 데이터를 서버로 전송하는 함수
+        function saveData(event) {
+            // 기본 폼 제출 방지
+            event.preventDefault();
+
+            // 폼 데이터를 FormData로 가져오기
+            const formData = new FormData(document.getElementById('signupForm'));
+
+
+            // 서버로 전송할 데이터
+            const url = `http://localhost:3000/user/${123}`;  // 서버의 회원 가입 처리 URL
+
+            // Fetch API를 사용하여 POST 요청 보내기
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            
+        }
+    </script>
+</body>
+</html>
