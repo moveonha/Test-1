@@ -1,6 +1,7 @@
 // server.js
 const express = require('express');
 const cors = require('cors');
+const db = require('./db.js'); // DB 연결
 const app = express();
 const PORT = 3000;
 
@@ -9,14 +10,34 @@ app.use(express.json()); // JSON 요청 파싱
 
 // 회원 가입 처리
 app.post('/user', (req, res) => {
-    console.log('회원가입 요청 도착:', req.body);
-    res.json({ message: '회원가입 성공!', data: req.body });
+    const { id, name, phone, email, pw } = req.body;
+    const query = `
+        INSERT INTO users (id, name, phone, email, pw)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+    db.run(query, [id, name, phone, email, pw], function (err) {
+        if (err) {
+            console.error('DB 저장 에러:', err.message);
+            return res.status(500).json({ message: 'DB 저장 실패', error: err.message });
+        }
+        res.json({ message: '회원가입 성공!', userId: id });
+    });
 });
 
 // 유저 ID 조회 예시
 app.get('/user/:id', (req, res) => {
-    console.log(`유저 ID 요청 도착: ${req.params.id}`);
-    res.json({ id: req.params.id, name: '임시유저' });
+    const userId = req.params.id;
+    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, row) => {
+        if (err) {
+            console.error('조회 실패:', err.message);
+            return res.status(500).json({ message: '조회 실패' });
+        }
+        if (row) {
+            res.json(row);
+        } else {
+            res.status(404).json({ message: '유저를 찾을 수 없음' });
+        }
+    });
 });
 
 app.listen(PORT, () => {
